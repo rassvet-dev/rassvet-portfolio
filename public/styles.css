@@ -1,0 +1,73 @@
+:root {
+  color-scheme: light;
+  --paper: #f4f3ef;
+  --ink: #171714;
+  --muted: #73736c;
+  --line: #cfcec7;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", "Yu Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+a:hover { opacity: 0.55; }
+a:focus-visible { outline: 2px solid currentColor; outline-offset: 5px; }
+
+.site-header,
+main,
+footer {
+  width: min(100% - 40px, 1180px);
+  margin-inline: auto;
+}
+
+.site-header {
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+
+.wordmark { font-size: 0.83rem; font-weight: 700; letter-spacing: 0.18em; }
+nav { display: flex; gap: 24px; font-size: 0.8rem; }
+
+.intro { padding: clamp(80px, 15vw, 190px) 0 clamp(100px, 14vw, 170px); }
+.eyebrow { margin: 0 0 22px; color: var(--muted); font-size: 0.74rem; letter-spacing: 0.12em; }
+h1 { margin: 0; max-width: 980px; font-size: clamp(3.1rem, 9vw, 8.5rem); font-weight: 400; letter-spacing: -0.065em; line-height: 0.88; }
+.lead { max-width: 460px; margin: 42px 0 0 auto; font-size: clamp(1rem, 1.6vw, 1.22rem); line-height: 1.8; }
+
+.works { padding-bottom: 120px; }
+.section-heading { display: flex; justify-content: space-between; padding: 15px 0; border-top: 1px solid var(--ink); }
+.section-heading h2, .section-heading p { margin: 0; font-size: 0.76rem; font-weight: 400; text-transform: uppercase; letter-spacing: 0.1em; }
+.work-list { margin: 0; padding: 0; list-style: none; }
+.work-list li { display: grid; grid-template-columns: 56px 1fr auto; gap: 16px; align-items: start; padding: 28px 0 30px; border-top: 1px solid var(--line); }
+.work-list li:last-child { border-bottom: 1px solid var(--line); }
+.index, .status { color: var(--muted); font-size: 0.72rem; }
+.work-list h3 { margin: -6px 0 8px; font-size: clamp(1.65rem, 4vw, 3.5rem); font-weight: 400; letter-spacing: -0.04em; }
+.work-list p { margin: 0; color: var(--muted); font-size: 0.86rem; }
+
+footer { display: flex; justify-content: space-between; padding: 24px 0 42px; border-top: 1px solid var(--ink); color: var(--muted); font-size: 0.72rem; }
+footer p { margin: 0; }
+
+@media (max-width: 600px) {
+  .site-header, main, footer { width: min(100% - 28px, 1180px); }
+  .site-header { min-height: 72px; }
+  .intro { padding-top: 72px; }
+  .lead { margin-left: 0; }
+  .work-list li { grid-template-columns: 36px 1fr; }
+  .status { grid-column: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
