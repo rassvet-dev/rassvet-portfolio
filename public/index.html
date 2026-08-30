@@ -12,7 +12,8 @@
     <meta property="og:url" content="https://rassvet.jp/" />
     <meta property="og:image" content="https://rassvet.jp/images/works/split.jpg" />
     <title>RASSVET — Illustration Archive</title>
-    <link rel="preload" as="image" href="/images/works/split.jpg" />
+    <link rel="preload" as="image" href="/images/works/split.jpg" media="(min-width: 701px)" />
+    <link rel="preload" as="image" href="/images/works/split-mobile.jpg" media="(max-width: 700px)" />
     <link rel="stylesheet" href="/styles.css" />
     <script src="/gallery.js" defer></script>
     <script type="application/ld+json">
@@ -73,14 +74,18 @@
             data-tone="light"
             aria-hidden="false"
           >
-            <img
-              class="work-image"
-              src="/images/works/split.jpg"
-              width="2400"
-              height="1600"
-              alt="黄緑色の背景に、緑色の髪の人物と肩に乗るオレンジ色の蛙を描いたイラスト"
-              fetchpriority="high"
-            />
+            <picture class="work-picture">
+              <source media="(max-width: 700px)" srcset="/images/works/split-mobile.jpg" />
+              <img
+                class="work-image"
+                src="/images/works/split.jpg"
+                width="2000"
+                height="1333"
+                sizes="100vw"
+                alt="黄緑色の背景に、緑色の髪の人物と肩に乗るオレンジ色の蛙を描いたイラスト"
+                fetchpriority="high"
+              />
+            </picture>
             <figcaption class="sr-only">SPLIT。サンプル作品、タイトルは仮です。</figcaption>
           </figure>
 

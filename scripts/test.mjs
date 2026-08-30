@@ -8,6 +8,7 @@ for (const required of [
   "RASSVET",
   "Illustration Archive",
   "images/works/split.jpg",
+  "images/works/split-mobile.jpg",
   "aria-label=\"作品を選ぶ\"",
   "AXO GUIDANCE",
   "application/ld+json",
@@ -22,6 +23,7 @@ for (const file of [
   "robots.txt",
   "_headers",
   "images/works/split.jpg",
+  "images/works/split-mobile.jpg",
   "images/works/split-thumb.jpg"
 ]) {
   await access(path.join(root, "dist", file));
