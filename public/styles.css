@@ -133,11 +133,11 @@ button:focus-visible {
 }
 
 #work-01 { --focus-x: 50%; --focus-y: 48%; }
-#work-02 { --focus-x: 56%; --focus-y: 34%; }
-#work-03 { --focus-x: 50%; --focus-y: 39%; }
-#work-04 { --focus-x: 45%; --focus-y: 44%; }
-#work-05 { --focus-x: 50%; --focus-y: 36%; }
-#work-06 { --focus-x: 52%; --focus-y: 43%; }
+#work-02 { --focus-x: 56%; --focus-y: 58%; }
+#work-03 { --focus-x: 50%; --focus-y: 68%; }
+#work-04 { --focus-x: 45%; --focus-y: 66%; }
+#work-05 { --focus-x: 50%; --focus-y: 62%; }
+#work-06 { --focus-x: 52%; --focus-y: 60%; }
 
 .gallery-stage::after {
   content: "";
@@ -228,7 +228,7 @@ button:focus-visible {
 .motion-echo {
   margin: 0;
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-  font-size: clamp(4.4rem, 15vw, 13rem);
+  font-size: clamp(4rem, 11vw, 10rem);
   font-weight: 900;
   letter-spacing: -0.055em;
   line-height: 0.78;
@@ -241,7 +241,7 @@ button:focus-visible {
 
 .gallery[data-title-size="compact"] .motion-title,
 .gallery[data-title-size="compact"] .motion-echo {
-  font-size: clamp(3.3rem, 11vw, 10rem);
+  font-size: clamp(3rem, 8vw, 7rem);
 }
 
 .motion-echo {
@@ -689,9 +689,9 @@ body.has-full-view { overflow: hidden; }
   .title-stage { bottom: 168px; }
   .work-category { margin-bottom: 7px; }
   .motion-title,
-  .motion-echo { font-size: clamp(3.7rem, 18.5vw, 6.2rem); }
+  .motion-echo { font-size: clamp(3.35rem, 15vw, 5.4rem); }
   .gallery[data-title-size="compact"] .motion-title,
-  .gallery[data-title-size="compact"] .motion-echo { font-size: clamp(2.65rem, 13vw, 4.8rem); }
+  .gallery[data-title-size="compact"] .motion-echo { font-size: clamp(2.5rem, 11vw, 4rem); }
   .work-subtitle { max-width: 72vw; line-height: 1.55; }
   .gallery-arrow { top: auto; bottom: 103px; width: 38px; height: 38px; }
   .gallery-arrow--prev { left: auto; right: 58px; }
