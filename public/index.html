@@ -124,7 +124,7 @@
             data-tone="light"
             aria-hidden="false"
           >
-            <picture class="work-picture">
+            <picture class="work-picture" role="button" tabindex="0" aria-label="SPLITを全体表示">
               <source media="(max-width: 700px)" srcset="/images/works/split-mobile.jpg" />
               <img
                 class="work-image"
@@ -150,7 +150,7 @@
             data-tone="dark"
             aria-hidden="true"
           >
-            <picture class="work-picture">
+            <picture class="work-picture" role="button" tabindex="-1" aria-label="No way out.を全体表示">
               <img class="work-image" src="/images/works/no-way-out.jpg" width="905" height="1280" sizes="100vw" alt="鮮やかな赤い背景と蜘蛛の巣越しに、青い髪の人物を描いたイラスト" loading="lazy" />
             </picture>
             <figcaption class="sr-only">No way out.。RASSVETによるイラストレーション。</figcaption>
@@ -166,7 +166,7 @@
             data-tone="dark"
             aria-hidden="true"
           >
-            <picture class="work-picture">
+            <picture class="work-picture" role="button" tabindex="-1" aria-label="越冬を全体表示">
               <img class="work-image" src="/images/works/etto.jpg" width="905" height="1280" sizes="100vw" alt="オレンジ色のフードをかぶり手袋を顔の前で合わせた人物のイラスト" loading="lazy" />
             </picture>
             <figcaption class="sr-only">越冬。RASSVETによるイラストレーション。</figcaption>
@@ -182,7 +182,7 @@
             data-tone="dark"
             aria-hidden="true"
           >
-            <picture class="work-picture">
+            <picture class="work-picture" role="button" tabindex="-1" aria-label="まばゆ雨を全体表示">
               <img class="work-image" src="/images/works/mabayu-ame.jpg" width="853" height="1280" sizes="100vw" alt="黄緑色の服に顔を預け、斜めから差す光を浴びる人物のイラスト" loading="lazy" />
             </picture>
             <figcaption class="sr-only">まばゆ雨。RASSVETによるイラストレーション。</figcaption>
@@ -198,7 +198,7 @@
             data-tone="dark"
             aria-hidden="true"
           >
-            <picture class="work-picture">
+            <picture class="work-picture" role="button" tabindex="-1" aria-label="Distanceを全体表示">
               <img class="work-image" src="/images/works/distance.jpg" width="720" height="1280" sizes="100vw" alt="蛍光緑の背景と柱のそばに立つ、青い髪の人物を描いたイラスト" loading="lazy" />
             </picture>
             <figcaption class="sr-only">Distance。RASSVETによるイラストレーション。</figcaption>
@@ -214,7 +214,7 @@
             data-tone="dark"
             aria-hidden="true"
           >
-            <picture class="work-picture">
+            <picture class="work-picture" role="button" tabindex="-1" aria-label="Akaneを全体表示">
               <img class="work-image" src="/images/works/akane.jpg" width="905" height="1280" sizes="100vw" alt="赤い眼鏡と青いフード付き上着を身につけた人物を描いたイラスト" loading="lazy" />
             </picture>
             <figcaption class="sr-only">Akane。RASSVETによるイラストレーション。</figcaption>
@@ -239,6 +239,10 @@
         </button>
         <button class="gallery-arrow gallery-arrow--next" type="button" data-next aria-label="次の作品を表示">
           <span aria-hidden="true">→</span>
+        </button>
+
+        <button class="full-view-cta" type="button" data-full-view-trigger>
+          <span aria-hidden="true">＋</span><span>View full</span>
         </button>
 
         <nav class="thumbnail-rail" aria-label="作品を選ぶ">
@@ -270,6 +274,22 @@
 
         <a class="scroll-cue" href="#information"><span>Information</span><span aria-hidden="true">↓</span></a>
       </section>
+
+      <dialog class="full-view" data-full-view aria-labelledby="full-view-title">
+        <button class="full-view__close" type="button" data-full-view-close aria-label="全体表示を閉じる">
+          <span>Close</span><span aria-hidden="true">×</span>
+        </button>
+        <figure class="full-view__figure">
+          <div class="full-view__canvas">
+            <img class="full-view__image" data-full-view-image src="/images/works/split.jpg" alt="" />
+          </div>
+          <figcaption class="full-view__caption">
+            <p data-full-view-number>01 / 06</p>
+            <h2 id="full-view-title" data-full-view-title>SPLIT</h2>
+            <p data-full-view-category>Illustration</p>
+          </figcaption>
+        </figure>
+      </dialog>
 
       <section class="information" id="information" aria-labelledby="information-title">
         <header class="information-header">

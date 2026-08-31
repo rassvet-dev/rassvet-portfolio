@@ -22,6 +22,9 @@ for (const required of [
   "Published works",
   "6 illustrations",
   "aria-label=\"作品を選ぶ\"",
+  "data-full-view",
+  "View full",
+  "全体表示を閉じる",
   "AXO GUIDANCE",
   "application/ld+json",
   "rassvet.jp"

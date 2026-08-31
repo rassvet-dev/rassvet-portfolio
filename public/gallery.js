@@ -11,8 +11,16 @@ if (gallery) {
   const category = gallery.querySelector("[data-category-output]");
   const previous = gallery.querySelector("[data-prev]");
   const next = gallery.querySelector("[data-next]");
+  const fullViewTrigger = gallery.querySelector("[data-full-view-trigger]");
+  const fullView = document.querySelector("[data-full-view]");
+  const fullViewClose = fullView.querySelector("[data-full-view-close]");
+  const fullViewImage = fullView.querySelector("[data-full-view-image]");
+  const fullViewTitle = fullView.querySelector("[data-full-view-title]");
+  const fullViewNumber = fullView.querySelector("[data-full-view-number]");
+  const fullViewCategory = fullView.querySelector("[data-full-view-category]");
   let activeIndex = 0;
   let pointerStart = null;
+  let suppressStageClick = false;
 
   const pad = (value) => String(value + 1).padStart(2, "0");
 
@@ -35,6 +43,7 @@ if (gallery) {
       const isActive = index === normalized;
       work.classList.toggle("is-active", isActive);
       work.setAttribute("aria-hidden", String(!isActive));
+      work.querySelector(".work-picture").tabIndex = isActive ? 0 : -1;
     });
 
     thumbnails.forEach((button, index) => {
@@ -59,14 +68,41 @@ if (gallery) {
     if (moveFocus) thumbnails[activeIndex].focus({ preventScroll: true });
   };
 
+  const openFullView = () => {
+    const selected = works[activeIndex];
+    const selectedImage = selected.querySelector(".work-image");
+
+    fullViewImage.src = selectedImage.getAttribute("src");
+    fullViewImage.alt = selectedImage.alt;
+    fullViewTitle.textContent = selected.dataset.title;
+    fullViewNumber.textContent = `${pad(activeIndex)} / ${String(works.length).padStart(2, "0")}`;
+    fullViewCategory.textContent = selected.dataset.category;
+    document.body.classList.add("has-full-view");
+    fullView.showModal();
+  };
+
+  const closeFullView = () => fullView.close();
+
   thumbnails.forEach((button) => {
     button.addEventListener("click", () => showWork(Number(button.dataset.index)));
   });
 
   previous.addEventListener("click", () => showWork(activeIndex - 1));
   next.addEventListener("click", () => showWork(activeIndex + 1));
+  fullViewTrigger.addEventListener("click", openFullView);
+  fullViewClose.addEventListener("click", closeFullView);
+
+  fullView.addEventListener("close", () => {
+    document.body.classList.remove("has-full-view");
+    fullViewTrigger.focus({ preventScroll: true });
+  });
 
   gallery.addEventListener("keydown", (event) => {
+    if (event.target.matches(".work-picture") && (event.key === "Enter" || event.key === " ")) {
+      event.preventDefault();
+      openFullView();
+      return;
+    }
     if (event.key === "ArrowLeft") {
       event.preventDefault();
       showWork(activeIndex - 1, true);
@@ -96,10 +132,20 @@ if (gallery) {
     const deltaY = event.clientY - pointerStart.y;
     pointerStart = null;
     if (Math.abs(deltaX) < 54 || Math.abs(deltaX) < Math.abs(deltaY)) return;
+    suppressStageClick = true;
+    window.setTimeout(() => { suppressStageClick = false; }, 400);
     showWork(activeIndex + (deltaX < 0 ? 1 : -1));
   });
 
   stage.addEventListener("pointercancel", () => { pointerStart = null; });
+
+  stage.addEventListener("click", (event) => {
+    if (suppressStageClick) {
+      suppressStageClick = false;
+      return;
+    }
+    if (event.target.closest(".work-picture")) openFullView();
+  });
 
   const indexFromHash = () => works.findIndex((work) => `#${work.id}` === window.location.hash);
 
