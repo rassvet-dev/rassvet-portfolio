@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "coordinateSystem": "normalized-top-left",
+  "detector": "macOS Core Image CIDetector",
+  "detectorResult": "No faces detected in the six stylized illustrations",
+  "fallback": "manual-verified",
+  "works": [
+    { "id": "work-01", "image": "split.jpg", "face": { "x": 0.41, "y": 0.52 } },
+    { "id": "work-02", "image": "no-way-out.jpg", "face": { "x": 0.69, "y": 0.27 } },
+    { "id": "work-03", "image": "etto.jpg", "face": { "x": 0.50, "y": 0.47 } },
+    { "id": "work-04", "image": "mabayu-ame.jpg", "face": { "x": 0.45, "y": 0.48 } },
+    { "id": "work-05", "image": "distance.jpg", "face": { "x": 0.52, "y": 0.31 } },
+    { "id": "work-06", "image": "akane.jpg", "face": { "x": 0.51, "y": 0.47 } }
+  ]
+}

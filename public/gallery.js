@@ -14,6 +14,7 @@ if (gallery) {
   const fullViewTrigger = gallery.querySelector("[data-full-view-trigger]");
   const fullView = document.querySelector("[data-full-view]");
   const fullViewClose = fullView.querySelector("[data-full-view-close]");
+  const fullViewCanvas = fullView.querySelector("[data-full-view-canvas]");
   const fullViewImage = fullView.querySelector("[data-full-view-image]");
   const fullViewTitle = fullView.querySelector("[data-full-view-title]");
   const fullViewNumber = fullView.querySelector("[data-full-view-number]");
@@ -21,6 +22,7 @@ if (gallery) {
   let activeIndex = 0;
   let pointerStart = null;
   let suppressStageClick = false;
+  let fullViewDrag = null;
 
   const pad = (value) => String(value + 1).padStart(2, "0");
 
@@ -62,10 +64,21 @@ if (gallery) {
     gallery.style.setProperty("--accent", selected.dataset.accent);
     gallery.dataset.tone = selected.dataset.tone;
     gallery.dataset.titleSize = selected.dataset.titleSize || "normal";
+    gallery.dataset.titleZone = Number(selected.dataset.faceY || 0.5) > 0.42 ? "top" : "bottom";
 
     thumbnails[activeIndex].scrollIntoView({ block: "nearest", inline: "nearest" });
 
     if (moveFocus) thumbnails[activeIndex].focus({ preventScroll: true });
+  };
+
+  const centerFullViewOnFace = (selected) => {
+    const faceX = Number(selected.dataset.faceX || 0.5);
+    const faceY = Number(selected.dataset.faceY || 0.5);
+    const targetX = fullViewImage.offsetLeft + fullViewImage.clientWidth * faceX;
+    const targetY = fullViewImage.offsetTop + fullViewImage.clientHeight * faceY;
+
+    fullViewCanvas.scrollLeft = Math.max(0, targetX - fullViewCanvas.clientWidth / 2);
+    fullViewCanvas.scrollTop = Math.max(0, targetY - fullViewCanvas.clientHeight / 2);
   };
 
   const openFullView = () => {
@@ -79,6 +92,11 @@ if (gallery) {
     fullViewCategory.textContent = selected.dataset.category;
     document.body.classList.add("has-full-view");
     fullView.showModal();
+    fullViewCanvas.focus({ preventScroll: true });
+
+    const revealFace = () => window.requestAnimationFrame(() => centerFullViewOnFace(selected));
+    if (fullViewImage.complete) revealFace();
+    else fullViewImage.addEventListener("load", revealFace, { once: true });
   };
 
   const closeFullView = () => fullView.close();
@@ -93,9 +111,43 @@ if (gallery) {
   fullViewClose.addEventListener("click", closeFullView);
 
   fullView.addEventListener("close", () => {
+    fullViewDrag = null;
+    fullViewCanvas.classList.remove("is-grabbing");
     document.body.classList.remove("has-full-view");
     fullViewTrigger.focus({ preventScroll: true });
   });
+
+  fullViewCanvas.addEventListener("pointerdown", (event) => {
+    if (event.pointerType === "touch" || event.button !== 0) return;
+    fullViewDrag = {
+      pointerId: event.pointerId,
+      x: event.clientX,
+      y: event.clientY,
+      left: fullViewCanvas.scrollLeft,
+      top: fullViewCanvas.scrollTop
+    };
+    fullViewCanvas.setPointerCapture(event.pointerId);
+    fullViewCanvas.classList.add("is-grabbing");
+  });
+
+  fullViewCanvas.addEventListener("pointermove", (event) => {
+    if (!fullViewDrag || event.pointerId !== fullViewDrag.pointerId) return;
+    event.preventDefault();
+    fullViewCanvas.scrollLeft = fullViewDrag.left - (event.clientX - fullViewDrag.x);
+    fullViewCanvas.scrollTop = fullViewDrag.top - (event.clientY - fullViewDrag.y);
+  });
+
+  const stopFullViewDrag = (event) => {
+    if (!fullViewDrag || event.pointerId !== fullViewDrag.pointerId) return;
+    if (fullViewCanvas.hasPointerCapture(event.pointerId)) {
+      fullViewCanvas.releasePointerCapture(event.pointerId);
+    }
+    fullViewDrag = null;
+    fullViewCanvas.classList.remove("is-grabbing");
+  };
+
+  fullViewCanvas.addEventListener("pointerup", stopFullViewDrag);
+  fullViewCanvas.addEventListener("pointercancel", stopFullViewDrag);
 
   gallery.addEventListener("keydown", (event) => {
     if (event.target.matches(".work-picture") && (event.key === "Enter" || event.key === " ")) {

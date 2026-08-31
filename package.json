@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node scripts/test.mjs"
+    "test": "node scripts/test.mjs",
+    "faces:detect": "CLANG_MODULE_CACHE_PATH=/tmp/rassvet-clang-cache SWIFT_MODULECACHE_PATH=/tmp/rassvet-swift-cache xcrun swift scripts/detect-faces.swift public/images/works/split.jpg public/images/works/no-way-out.jpg public/images/works/etto.jpg public/images/works/mabayu-ame.jpg public/images/works/distance.jpg public/images/works/akane.jpg"
   },
   "engines": {
     "node": ">=20"
   }
 }
-
