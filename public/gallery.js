@@ -52,6 +52,9 @@ if (gallery) {
     renderCharacters(titleEcho, selected.dataset.title);
     gallery.style.setProperty("--accent", selected.dataset.accent);
     gallery.dataset.tone = selected.dataset.tone;
+    gallery.dataset.titleSize = selected.dataset.titleSize || "normal";
+
+    thumbnails[activeIndex].scrollIntoView({ block: "nearest", inline: "nearest" });
 
     if (moveFocus) thumbnails[activeIndex].focus({ preventScroll: true });
   };
@@ -98,5 +101,13 @@ if (gallery) {
 
   stage.addEventListener("pointercancel", () => { pointerStart = null; });
 
-  showWork(0);
+  const indexFromHash = () => works.findIndex((work) => `#${work.id}` === window.location.hash);
+
+  window.addEventListener("hashchange", () => {
+    const requestedIndex = indexFromHash();
+    if (requestedIndex >= 0) showWork(requestedIndex);
+  });
+
+  const requestedIndex = indexFromHash();
+  showWork(requestedIndex >= 0 ? requestedIndex : 0);
 }
