@@ -99,8 +99,8 @@ button:focus-visible {
 
 .gallery {
   position: relative;
-  height: 140svh;
-  min-height: 980px;
+  height: 100svh;
+  min-height: 680px;
   isolation: isolate;
   overflow: hidden;
   background: #050505;
@@ -136,15 +136,51 @@ button:focus-visible {
 }
 
 .work-picture {
+  --art-top: clamp(68px, 8vh, 96px);
+  --art-bottom: clamp(16px, 2.5vh, 32px);
+  --art-inline: clamp(24px, 5vw, 84px);
   position: absolute;
-  inset: 0;
+  z-index: 2;
+  inset: 0 0 clamp(148px, 18vh, 190px);
   display: grid;
   place-items: center;
   width: 100%;
-  height: 100%;
   overflow: hidden;
-  background: #050505;
+  background: rgba(5, 5, 5, 0.14);
   cursor: zoom-in;
+}
+
+.work::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -5%;
+  background-image: var(--art-url);
+  background-position: center;
+  background-size: cover;
+  filter: blur(52px) brightness(0.62) saturate(0.72);
+  opacity: 0.3;
+  transform: scale(1.04);
+}
+
+#work-01 { --art-url: url("/images/works/split.jpg"); }
+#work-02 { --art-url: url("/images/works/no-way-out.jpg"); }
+#work-03 { --art-url: url("/images/works/etto.jpg"); }
+#work-04 { --art-url: url("/images/works/mabayu-ame.jpg"); }
+#work-05 { --art-url: url("/images/works/distance.jpg"); }
+#work-06 { --art-url: url("/images/works/akane.jpg"); }
+
+.work::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.38);
+  pointer-events: none;
+}
+
+.work[data-orientation="portrait"] .work-picture {
+  --art-inline: clamp(24px, 9vw, 160px);
 }
 
 .work-picture:focus-visible {
@@ -183,11 +219,16 @@ button:focus-visible {
 }
 
 .work-image {
+  position: absolute;
+  top: var(--art-top);
+  left: var(--art-inline);
   display: block;
-  width: 100%;
-  height: 100%;
+  width: calc(100% - var(--art-inline) - var(--art-inline));
+  height: calc(100% - var(--art-top) - var(--art-bottom));
+  background: rgba(5, 5, 5, 0.82);
   object-fit: contain;
   object-position: 50% 50%;
+  filter: drop-shadow(0 22px 44px rgba(0, 0, 0, 0.34));
 }
 
 .gallery-status {
@@ -723,13 +764,18 @@ body.has-full-view { overflow: hidden; }
   .site-nav { gap: 13px; font-size: 0.59rem; }
   .wordmark { font-size: 0.68rem; }
   .gallery {
-    height: 118svh;
-    min-height: 760px;
+    height: 100svh;
+    min-height: 620px;
+  }
+  .work-picture,
+  .work[data-orientation="portrait"] .work-picture {
+    --art-top: 58px;
+    --art-bottom: 12px;
+    --art-inline: 10px;
+    inset-bottom: 124px;
   }
   .work-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     object-position: var(--focus-x, 50%) var(--focus-y, 50%);
   }
   #work-01 { --focus-x: 41%; --focus-y: 52%; }

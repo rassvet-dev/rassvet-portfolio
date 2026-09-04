@@ -31,6 +31,8 @@ for (const required of [
   "Scroll / drag to explore",
   "data-face-x=\"0.69\"",
   "data-face-y=\"0.31\"",
+  "data-orientation=\"landscape\"",
+  "data-orientation=\"portrait\"",
   "全体表示を閉じる",
   "AXO GUIDANCE",
   "application/ld+json",
@@ -68,8 +70,11 @@ for (const work of faceFocus.works) {
 }
 
 for (const requiredStyle of [
-  "height: 140svh",
+  "height: 100svh",
   "object-fit: contain",
+  "background-image: var(--art-url)",
+  "#work-06 { --art-url:",
+  ".work[data-orientation=\"portrait\"]",
   ".gallery-controls",
   ".full-view__canvas.is-grabbing"
 ]) {
