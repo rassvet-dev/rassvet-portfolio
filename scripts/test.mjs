@@ -26,19 +26,36 @@ for (const required of [
   "6 illustrations",
   "aria-label=\"作品を選ぶ\"",
   "data-full-view",
-  "View actual size",
+  "作品を拡大",
   "data-full-view-canvas",
-  "Scroll / drag to explore",
+  "スクロール・ドラッグで移動",
   "data-face-x=\"0.69\"",
   "data-face-y=\"0.31\"",
   "data-orientation=\"landscape\"",
   "data-orientation=\"portrait\"",
   "全体表示を閉じる",
-  "AXO GUIDANCE",
+  "PORTFOLIO INFORMATION",
+  "All rights reserved.",
+  "maximum-scale=1",
+  "user-scalable=no",
   "application/ld+json",
   "rassvet.jp"
 ]) {
   if (!index.includes(required)) throw new Error(`Missing required text: ${required}`);
+}
+
+for (const provisionalCopy of [
+  "HUMAN + AGENT READABLE",
+  "MACHINE READABLE",
+  "ここへ追加",
+  "掲載予定です",
+  "受付状況：未掲載",
+  "仮ポリシー",
+  "連絡先：準備中",
+  "AXO GUIDANCE",
+  "For agents"
+]) {
+  if (index.includes(provisionalCopy)) throw new Error(`Provisional copy remains: ${provisionalCopy}`);
 }
 
 for (const file of [
@@ -75,6 +92,8 @@ for (const requiredStyle of [
   "background-image: var(--art-url)",
   "#work-06 { --art-url:",
   ".work[data-orientation=\"portrait\"]",
+  "touch-action: pan-y",
+  "touch-action: pan-x",
   ".gallery-controls",
   ".full-view__canvas.is-grabbing"
 ]) {

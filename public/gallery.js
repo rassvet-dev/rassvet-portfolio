@@ -19,7 +19,13 @@ if (gallery) {
   const fullViewTitle = fullView.querySelector("[data-full-view-title]");
   const fullViewNumber = fullView.querySelector("[data-full-view-number]");
   const fullViewCategory = fullView.querySelector("[data-full-view-category]");
+  const fitToggle = fullView.querySelector("[data-viewer-fit]");
+  const announcement = gallery.querySelector("[data-announcement]");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const rail = gallery.querySelector(".thumbnail-rail");
   let activeIndex = 0;
+  let imageAnimation = null;
+  let selectionRequest = 0;
   let pointerStart = null;
   let suppressStageClick = false;
   let fullViewDrag = null;
@@ -37,9 +43,14 @@ if (gallery) {
     });
   };
 
-  const showWork = (nextIndex, moveFocus = false) => {
+  const showWork = async (nextIndex, moveFocus = false) => {
     const normalized = (nextIndex + works.length) % works.length;
     const selected = works[normalized];
+    const request = ++selectionRequest;
+    const direction = nextIndex < activeIndex ? -1 : 1;
+    const selectedImage = selected.querySelector(".work-image");
+    try { await selectedImage.decode(); } catch { /* Display the image's alt text on failure. */ }
+    if (request !== selectionRequest) return;
 
     works.forEach((work, index) => {
       const isActive = index === normalized;
@@ -56,19 +67,34 @@ if (gallery) {
     });
 
     activeIndex = normalized;
+    if (/^#work-\d+$/.test(location.hash)) history.replaceState(null, "", `#${selected.id}`);
     currentLabel.textContent = pad(activeIndex);
     category.textContent = selected.dataset.category;
     subtitle.textContent = selected.dataset.subtitle;
     renderCharacters(title, selected.dataset.title);
     renderCharacters(titleEcho, selected.dataset.title);
-    gallery.style.setProperty("--accent", selected.dataset.accent);
     gallery.dataset.tone = selected.dataset.tone;
     gallery.dataset.titleSize = selected.dataset.titleSize || "normal";
     gallery.dataset.titleZone = Number(selected.dataset.faceY || 0.5) > 0.42 ? "top" : "bottom";
 
-    thumbnails[activeIndex].scrollIntoView({ block: "nearest", inline: "nearest" });
+    // Move only the thumbnail strip; selecting a work must not scroll the page.
+    const thumb = thumbnails[activeIndex];
+    const thumbBox = thumb.getBoundingClientRect();
+    const railBox = rail.getBoundingClientRect();
+    if (thumbBox.left < railBox.left || thumbBox.right > railBox.right) {
+      rail.scrollTo({ left: thumb.offsetLeft - rail.clientWidth / 2 + thumb.clientWidth / 2, behavior: reducedMotion.matches ? "instant" : "smooth" });
+    }
+    announcement.textContent = `${pad(activeIndex)} / ${works.length}、${selected.dataset.title}`;
+    imageAnimation?.cancel();
+    if (!reducedMotion.matches) {
+      imageAnimation = selectedImage.animate([
+        { opacity: 0, transform: `translateX(${direction * 28}px) scale(0.97)`, clipPath: direction > 0 ? "inset(0 18% 0 0)" : "inset(0 0 0 18%)", filter: "blur(12px)" },
+        { opacity: 1, transform: "translateX(0) scale(1)", clipPath: "inset(0 0 0 0)", filter: "blur(0)" }
+      ], { duration: 850, easing: "cubic-bezier(0.16, 1, 0.3, 1)" });
+    }
 
     if (moveFocus) thumbnails[activeIndex].focus({ preventScroll: true });
+    return selected;
   };
 
   const centerFullViewOnFace = (selected) => {
@@ -91,10 +117,12 @@ if (gallery) {
     fullViewNumber.textContent = `${pad(activeIndex)} / ${String(works.length).padStart(2, "0")}`;
     fullViewCategory.textContent = selected.dataset.category;
     document.body.classList.add("has-full-view");
-    fullView.showModal();
+    if (!fullView.open) fullView.showModal();
     fullViewCanvas.focus({ preventScroll: true });
 
-    const revealFace = () => window.requestAnimationFrame(() => centerFullViewOnFace(selected));
+    const revealFace = () => window.requestAnimationFrame(() => {
+      if (!fullView.classList.contains("is-fit")) centerFullViewOnFace(selected);
+    });
     if (fullViewImage.complete) revealFace();
     else fullViewImage.addEventListener("load", revealFace, { once: true });
   };
@@ -109,6 +137,20 @@ if (gallery) {
   next.addEventListener("click", () => showWork(activeIndex + 1));
   fullViewTrigger.addEventListener("click", openFullView);
   fullViewClose.addEventListener("click", closeFullView);
+  fitToggle.addEventListener("click", () => {
+    const fit = fullView.classList.toggle("is-fit");
+    fitToggle.setAttribute("aria-pressed", String(fit));
+    fitToggle.textContent = fit ? "実寸表示" : "全体表示";
+    fullViewCanvas.setAttribute("aria-label", fit ? "作品全体の表示" : "実寸画像。スクロールまたはドラッグで移動できます");
+    if (!fit) window.requestAnimationFrame(() => centerFullViewOnFace(works[activeIndex]));
+  });
+  for (const [selector, offset] of [["[data-viewer-prev]", -1], ["[data-viewer-next]", 1]]) {
+    fullView.querySelector(selector).addEventListener("click", async () => {
+      const selected = await showWork(activeIndex + offset);
+      if (selected && fullView.open) openFullView();
+    });
+  }
+  reducedMotion.addEventListener("change", () => { if (reducedMotion.matches) imageAnimation?.cancel(); });
 
   fullView.addEventListener("close", () => {
     fullViewDrag = null;
@@ -118,7 +160,7 @@ if (gallery) {
   });
 
   fullViewCanvas.addEventListener("pointerdown", (event) => {
-    if (event.pointerType === "touch" || event.button !== 0) return;
+    if (fullView.classList.contains("is-fit") || event.pointerType === "touch" || event.button !== 0) return;
     fullViewDrag = {
       pointerId: event.pointerId,
       x: event.clientX,
@@ -174,16 +216,25 @@ if (gallery) {
   });
 
   stage.addEventListener("pointerdown", (event) => {
+    if (!event.isPrimary) { pointerStart = null; return; }
     if (event.pointerType === "mouse" && event.button !== 0) return;
-    pointerStart = { x: event.clientX, y: event.clientY };
+    pointerStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId, onPicture: Boolean(event.target.closest(".work-picture")) };
+    if (event.pointerType !== "mouse") stage.setPointerCapture(event.pointerId);
   });
 
   stage.addEventListener("pointerup", (event) => {
-    if (!pointerStart) return;
+    if (!pointerStart || pointerStart.pointerId !== event.pointerId) return;
     const deltaX = event.clientX - pointerStart.x;
     const deltaY = event.clientY - pointerStart.y;
+    const onPicture = pointerStart.onPicture;
     pointerStart = null;
-    if (Math.abs(deltaX) < 54 || Math.abs(deltaX) < Math.abs(deltaY)) return;
+    if (Math.abs(deltaX) < 54 || Math.abs(deltaX) < Math.abs(deltaY)) {
+      if (event.pointerType !== "mouse" && onPicture && Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
+        suppressStageClick = true;
+        openFullView();
+      }
+      return;
+    }
     suppressStageClick = true;
     window.setTimeout(() => { suppressStageClick = false; }, 400);
     showWork(activeIndex + (deltaX < 0 ? 1 : -1));
@@ -200,6 +251,22 @@ if (gallery) {
   });
 
   const indexFromHash = () => works.findIndex((work) => `#${work.id}` === window.location.hash);
+
+  thumbnails.forEach((button, index) => button.setAttribute("aria-label", `${works[index].dataset.title}を表示`));
+  works.forEach((work) => { work.querySelector(".work-image").draggable = false; });
+  document.querySelectorAll(".works-index li").forEach((item, index) => {
+    const link = document.createElement("a");
+    link.href = `#${works[index].id}`;
+    link.append(...item.childNodes);
+    item.append(link);
+    link.addEventListener("click", async (event) => {
+      event.preventDefault();
+      history.replaceState(null, "", link.hash);
+      await showWork(index);
+      gallery.scrollIntoView({ behavior: reducedMotion.matches ? "instant" : "smooth" });
+      works[index].querySelector(".work-picture").focus({ preventScroll: true });
+    });
+  });
 
   window.addEventListener("hashchange", () => {
     const requestedIndex = indexFromHash();

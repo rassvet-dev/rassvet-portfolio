@@ -1,11 +1,13 @@
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
 import { createServer } from "node:http";
+import { networkInterfaces } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "dist");
-const host = process.env.HOST || "127.0.0.1";
+const lanMode = process.argv.includes("--lan");
+const host = process.env.HOST || (lanMode ? "0.0.0.0" : "127.0.0.1");
 const port = Number(process.env.PORT || 4173);
 const mimeTypes = new Map([
   [".css", "text/css; charset=utf-8"],
@@ -44,5 +46,17 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(port, host, () => {
-  console.log(`Portfolio preview: http://${host}:${port}`);
+  if (!lanMode && host === "127.0.0.1") {
+    console.log(`Portfolio preview: http://127.0.0.1:${port}`);
+    return;
+  }
+
+  const addresses = Object.values(networkInterfaces())
+    .flatMap((entries) => entries || [])
+    .filter((entry) => entry.family === "IPv4" && !entry.internal)
+    .map((entry) => entry.address);
+
+  console.log(`Portfolio LAN preview: http://127.0.0.1:${port}`);
+  for (const address of addresses) console.log(`Portfolio LAN preview: http://${address}:${port}`);
+  console.log("Stop with Ctrl-C. Devices must be on the same Wi-Fi/LAN.");
 });
